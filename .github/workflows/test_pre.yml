@@ -13,3 +13,32 @@ jobs:
       runs-on: '["ubuntu-latest", ]'
       use-pre: true
       extra-depends: scikit_learn scipy statsmodels pandas tables
+  build_wheel_aarch64:
+    name: "Build aarch64 ${{ matrix.python-version }}"
+    strategy:
+      matrix:
+        python-version: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    env:
+      img: quay.io/pypa/manylinux2014_aarch64
+      py: /opt/python/${{matrix.python-version}}/bin/python
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - run: |
+         docker run --rm --privileged hypriot/qemu-register
+    - run: |
+         docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+           ${{ env.img }} \
+           bash -exc '${{ env.py }} -m venv .env && \
+           source .env/bin/activate && \
+           export INSTALL_TYPE=pip && \
+           export DEPENDS=cython numpy matplotlib h5py nibabel cvxpy tqdm && \
+           export VENV_ARGS=--python=python && \
+           export EXTRA_DEPENDS=scikit_learn scipy statsmodels pandas tables && \
+           ./tools/ci/install_dependencies.sh && \
+           ./tools/ci/install.sh && \
+           ./tools/ci/run_tests.sh && \
+            deactivate'
