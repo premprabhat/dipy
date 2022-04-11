@@ -34,6 +34,13 @@ jobs:
            ${{ env.img }} \
            bash -exc '${{ env.py }} -m venv .env && \
            source .env/bin/activate && \
+           yum install -y wget libgfortran && \
+           wget https://download-ib01.fedoraproject.org/pub/epel/7/aarch64/Packages/h/hdf5-devel-1.8.12-11.el7.aarch64.rpm && \
+           wget https://download-ib01.fedoraproject.org/pub/epel/7/aarch64/Packages/h/hdf5-1.8.12-11.el7.aarch64.rpm && \
+           wget https://download-ib01.fedoraproject.org/pub/epel/7/aarch64/Packages/l/libaec-1.0.4-1.el7.aarch64.rpm && \
+           rpm -i libaec-1.0.4-1.el7.aarch64.rpm && rpm -i hdf5-1.8.12-11.el7.aarch64.rpm && \
+           wget https://download-ib01.fedoraproject.org/pub/epel/7/aarch64/Packages/l/libaec-devel-1.0.4-1.el7.aarch64.rpm && \
+           rpm -i libaec-devel-1.0.4-1.el7.aarch64.rpm && rpm -i hdf5-devel-1.8.12-11.el7.aarch64.rpm
            export INSTALL_TYPE=pip && \
            export DEPENDS=cython numpy matplotlib h5py nibabel cvxpy tqdm && \
            export VENV_ARGS=--python=python && \
